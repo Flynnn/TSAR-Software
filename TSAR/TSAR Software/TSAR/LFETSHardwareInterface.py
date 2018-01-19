@@ -35,37 +35,37 @@ class LFETSHardwareInterface(ABC):
 	
 	def SetValveOpen(self, valve, open):
 		if (valve == "58.1"):
-			return self.SetValveOpen58_1(self, open)
+			return self.SetValveOpen58_1(open)
 		elif (valve == "42.1"):
-			return self.SetValveOpen42_1(self, open)
+			return self.SetValveOpen42_1(open)
 		elif (valve == "9.3"):
-			return self.SetValveOpen9_3(self, open)
+			return self.SetValveOpen9_3(open)
 		elif (valve == "9.2"):
-			return self.SetValveOpen9_2(self, open)
+			return self.SetValveOpen9_2(open)
 		elif (valve == "49.1"):
-			return self.SetValveOpen49_1(self, open)
+			return self.SetValveOpen49_1(open)
 		elif (valve == "49.2"):
-			return self.SetValveOpen49_2(self, open)
+			return self.SetValveOpen49_2(open)
 		elif (valve == "9.1"):
-			return self.SetValveOpen9_1(self, open)
+			return self.SetValveOpen9_1(open)
 		else:
 			raise LookupError("Bad Valve Identifier: " + str(valve))
 	
 	def GetValveOpen(self, valve):
 		if (valve == "58.1"):
-			return self.GetValveOpen58_1(self)
+			return self.GetValveOpen58_1()
 		elif (valve == "42.1"):
-			return self.GetValveOpen42_1(self)
+			return self.GetValveOpen42_1()
 		elif (valve == "9.3"):
-			return self.GetValveOpen9_3(self)
+			return self.GetValveOpen9_3()
 		elif (valve == "9.2"):
-			return self.GetValveOpen9_2(self)
+			return self.GetValveOpen9_2()
 		elif (valve == "49.1"):
-			return self.GetValveOpen49_1(self)
+			return self.GetValveOpen49_1()
 		elif (valve == "49.2"):
-			return self.GetValveOpen49_2(
+			return self.GetValveOpen49_2()
 		elif (valve == "9.1"):
-			return self.GetValveOpen9_1(self))
+			return self.GetValveOpen9_1()
 		else:
 			raise LookupError("Bad Valve Identifier: " + str(valve))
 	
@@ -142,15 +142,15 @@ class LFETSHardwareInterface(ABC):
 	
 	def GetPressure(self, transducer):
 		if (transducer == "4.1"):
-			return self.GetPressure4_1(self)
+			return self.GetPressure4_1()
 		elif (transducer == "4.2"):
-			return self.GetPressure4_2(self)
+			return self.GetPressure4_2()
 		elif (transducer == "4.3"):
-			return self.GetPressure4_3(self)
+			return self.GetPressure4_3()
 		elif (transducer == "4.4"):
-			return self.GetPressure4_4(self)
+			return self.GetPressure4_4()
 		elif (transducer == "4.5"):
-			return self.GetPressure4_5(self)
+			return self.GetPressure4_5()
 		else:
 			raise LookupError("Bad Pressure Transducer Identifier: " + str(transducer))
 	
@@ -187,12 +187,12 @@ class LFETSHardwareInterface(ABC):
 	###################
 	
 	def GetTemperature(self, thermometer):
-		elif (thermometer == "43.1"):
-			return self.GetTemperature43_1(self)
+		if (thermometer == "43.1"):
+			return self.GetTemperature43_1()
 		elif (thermometer == "43.3"):
-			return self.GetTemperature43_3(self)
+			return self.GetTemperature43_3()
 		elif (thermometer == "43.X"):
-			return self.GetTemperature43_X(self)
+			return self.GetTemperature43_X()
 		else:
 			raise LookupError("Bad Thermometer Identifier: " + str(thermometer))
 	
@@ -229,17 +229,17 @@ class LFETSHardwareInterface(ABC):
 	
 	def SetServo(self, servo, value):
 		if (valve == "68.1"):
-			return self.SetServo68_1(self, value)
+			return self.SetServo68_1(value)
 		elif (valve == "69.1"):
-			return self.SetServo69_1(self, value)
+			return self.SetServo69_1(value)
 		else:
 			raise LookupError("Bad Servo Identifier: " + str(valve))
 	
 	def GetServo(self, servo):
 		if (servo == "68.1"):
-			return self.GetServo68_1(self)
+			return self.GetServo68_1()
 		elif (servo == "69.1"):
-			return self.GetServo69_1(self)
+			return self.GetServo69_1()
 		else:
 			raise LookupError("Bad Servo Identifier: " + str(valve))
 	
