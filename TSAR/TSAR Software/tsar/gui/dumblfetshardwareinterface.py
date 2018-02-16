@@ -1,6 +1,8 @@
 from LFETSHardwareInterface import LFETSHardwareInterface
+from time import time
+from math import sin, cos
 
-class DumbLFETSHardwareInterface(LFETSHardwareInterface.LFETSHardwareInterface):
+class DumbLFETSHardwareInterface(LFETSHardwareInterface):
 	
 	#Should set valve to open if open true, and vice versa.
 	def SetValveOpen58_1(self, open):
@@ -55,11 +57,11 @@ class DumbLFETSHardwareInterface(LFETSHardwareInterface.LFETSHardwareInterface):
 
 		#Should return (Float): (Pressure)	
 	def GetPressure4_1(self):
-		pass
+		return sin(time()) * 10 + 10
 	
 	#Should return (Float): (Pressure)	
 	def GetPressure4_2(self):
-		pass
+		return cos(time()) * 10 + 10
 	
 	#Should return (Float): (Pressure)	
 	def GetPressure4_3(self):
