@@ -179,14 +179,14 @@ if __name__ == "__main__":
 	dumdum = DumbLFETSHardwareInterface()
 	
 	widgets = {
-			"50.1":	PassiveWidget(None, "Nitrogen Tank 50.1", QRect(500, 150, 120, 98), "tank.jpg"),
-			"28.1":	PassiveWidget(None, "Fuel Tank 28.1", QRect(900, 450, 120, 98), "tank.jpg"),
-			"4.1":	PressureTranducer4_1(dumdum, "Pressure Tranducer 4.1", QRect(600, 50, 50, 75), "transducer.png"),
-			"4.2":	PressureTranducer4_2(dumdum, "Pressure Tranducer 4.2", QRect(900, 250, 50, 75), "transducer.png"),
-			"11.1": PassiveWidget(None, "Pressure Regulator 11.1", QRect(900, 50, 50, 50), "regulator.jpg"),
-			"7.1":	PassiveWidget(None, "Pressure Regulator 7.1", QRect(300, 50, 50, 50), "regulator.jpg"),
-			"9.2":	Valve9_2(dumdum, "Valve 9.2", QRect(900, 150, 50, 75), "valve.jpg"),
-			"58.1":	Valve58_1(dumdum, "Valve 58.1", QRect(1000, 350, 50, 75), "valve.jpg"),
+			"50.1":	PassiveWidget(None, "Nitrogen Tank 50.1", QRect(500, 150, 120, 98), "images/tank.jpg"),
+			"28.1":	PassiveWidget(None, "Fuel Tank 28.1", QRect(900, 450, 120, 98), "images/tank.jpg"),
+			"4.1":	PressureTranducer4_1(dumdum, "Pressure Tranducer 4.1", QRect(600, 50, 50, 75), "images/transducer.png"),
+			"4.2":	PressureTranducer4_2(dumdum, "Pressure Tranducer 4.2", QRect(900, 250, 50, 75), "images/transducer.png"),
+			"11.1": PassiveWidget(None, "Pressure Regulator 11.1", QRect(900, 50, 50, 50), "images/regulator.jpg"),
+			"7.1":	PassiveWidget(None, "Pressure Regulator 7.1", QRect(300, 50, 50, 50), "images/regulator.jpg"),
+			"9.2":	Valve9_2(dumdum, "Valve 9.2", QRect(900, 150, 50, 75), "images/valve.jpg"),
+			"58.1":	Valve58_1(dumdum, "Valve 58.1", QRect(1000, 350, 50, 75), "images/valve.jpg"),
 	}
 
 	int0 = QPoint(925, 375)
