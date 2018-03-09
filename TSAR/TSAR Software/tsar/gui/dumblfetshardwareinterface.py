@@ -1,6 +1,6 @@
 from LFETSHardwareInterface import LFETSHardwareInterface
 from time import time
-from math import sin, cos
+from math import sin, cos, tan
 
 class DumbLFETSHardwareInterface(LFETSHardwareInterface):
 	
@@ -65,19 +65,23 @@ class DumbLFETSHardwareInterface(LFETSHardwareInterface):
 	
 	#Should return (Float): (Pressure)	
 	def GetPressure4_3(self):
-		pass
+		return abs(tan(time()/2) * 10)
 		
 	#Should return (Float): (Pressure)	
 	def GetPressure4_4(self):
-		pass
+		return abs(1/tan(time()/10)) + 15
 	
 	#Should return (Float): (Pressure)	
 	def GetPressure4_5(self):
-		pass
+		return 10 ** sin(time()/10)
 		
 			#Should return (Float): (Temperature)
 	def GetTemperature43_1(self):
-		pass
+		return sin(time() / 15) * 5 + 45
+
+	#Should return (Float): (Temperature)
+	def GetTemperature43_2(self):
+		return (5 ** sin(time() / 15)) + 50
 	
 	#Should return (Float): (Temperature)
 	def GetTemperature43_3(self):
@@ -94,6 +98,9 @@ class DumbLFETSHardwareInterface(LFETSHardwareInterface):
 		pass
 	#Should return current servo value
 	def GetServo69_1(self):
+		pass
+	### ADDED TO COMPILE
+	def GetServo68_1(self):
 		pass
 
 # obj = DumbLFETSHardwareInterface()
