@@ -8,6 +8,7 @@ from dumblfetshardwareinterface import DumbLFETSHardwareInterface
 π = math.pi
 
 try:
+	#TODO: Fix these horrible import statements
 	from PyQt5.QtWidgets import *
 	from PyQt5 import QtGui
 	from PyQt5.QtGui import *
@@ -23,7 +24,6 @@ class SCADA(QWidget):
 		
 		# self.setGeometry(300, 100, 1200, 800)
 		self.setFixedSize(1200, 800)
-		self.setWindowTitle('LFETS SCADA')
 
 		# Set background color
 		self.setAutoFillBackground(True)
@@ -196,7 +196,7 @@ class Servo68_1(PassiveWidget):
 		return self.hardware.GetServo68_1()
 
 	def get_text(self):
-		# TODO: What value does servo have?
+		# TODO: Servos have three states: Open, Partial, and Closed. Add text to represent states
 		return "Name: {}\nValve: {}".format(self.name, self.hardware.GetServo68_1())
 
 class Servo69_1(PassiveWidget):
@@ -204,7 +204,7 @@ class Servo69_1(PassiveWidget):
 		return self.hardware.GetServo69_1()
 
 	def get_text(self):
-		# TODO: What value does servo have?
+		# TODO: Servos have three states: Open, Partial, and Closed. Add text to represent states
 		return "Name: {}\nValve: {}".format(self.name, self.hardware.GetServo69_1())
 
 class TemperatureSensor43_1(PassiveWidget):
@@ -221,11 +221,10 @@ class TemperatureSensor43_1(PassiveWidget):
 		return self.hardware.GetTemperature43_1()
 
 	def get_kelvin(self):
-		return self.get_celsius() + 273.15
+		return self.hardware.GetTemperature43_1()
 
-	# Assume temperature sensor returns data in celsius
 	def get_celsius(self):
-		return self.get_data()
+		return self.get_kelvin() + 273.15
 
 	def get_fahrenheit(self):
 		return self.get_celsius() * 1.8 + 32.0
@@ -256,11 +255,10 @@ class TemperatureSensor43_2(PassiveWidget):
 		return self.hardware.GetTemperature43_2()
 
 	def get_kelvin(self):
-		return self.get_celsius() + 273.15
+		return self.hardware.GetTemperature43_2()
 
-	# Assume temperature sensor returns data in celsius
 	def get_celsius(self):
-		return self.get_data()
+		return self.hardware.GetTemperature43_2() + 273.15
 
 	def get_fahrenheit(self):
 		return self.get_celsius() * 1.8 + 32.0
@@ -276,6 +274,16 @@ class TemperatureSensor43_2(PassiveWidget):
 		else:
 			func = lambda: float("NaN")
 		return "Name: {}\nTemperature: {:.2f} °{}".format(self.name, func(), self.format)
+
+class Rocket_Nozzle(PassiveWidget):
+	def __init__(self, *args, **kwargs):
+		PassiveWidget.__init__(self, *args, **kwargs)
+		self.temperature = TemperatureSensor43_2()
+		self.pressure = PressureTranducer4_5()
+
+	def get_text(self):
+		pass
+
 
 class Pipe:
 	def __init__(self, start, end, startAnchor=(.5, .5), endAnchor=(.5, .5), joints=0, color=Qt.white, direction=0):
@@ -407,6 +415,7 @@ if __name__ == "__main__":
 
 	# Create interface
 	main = SCADA(widgets.values())
+	main.setWindowTitle('LFETS TSAR SCADA')
 
 	# Run app
 	sys.exit(app.exec_())

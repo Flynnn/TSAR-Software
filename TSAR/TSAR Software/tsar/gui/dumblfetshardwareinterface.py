@@ -96,12 +96,14 @@ class DumbLFETSHardwareInterface(LFETSHardwareInterface):
 
 	def SetServo68_1(self, value):
 		pass
+
 	#Should return current servo value
 	def GetServo69_1(self):
-		pass
+		return sin(time() / 15) * 180 + 180
+
 	### ADDED TO COMPILE
 	def GetServo68_1(self):
-		pass
+		return cos(time() / 15) * 180 + 180
 
 # obj = DumbLFETSHardwareInterface()
 # obj.SetAllValvesOpen(True)

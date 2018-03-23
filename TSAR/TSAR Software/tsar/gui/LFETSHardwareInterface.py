@@ -189,6 +189,8 @@ class LFETSHardwareInterface(ABC):
 	def GetTemperature(self, thermometer):
 		if (thermometer == "43.1"):
 			return self.GetTemperature43_1()
+		elif (thermometer == "43.2"):
+			return self.GetTemperature43_2()
 		elif (thermometer == "43.3"):
 			return self.GetTemperature43_3()
 		elif (thermometer == "43.X"):
@@ -201,6 +203,11 @@ class LFETSHardwareInterface(ABC):
 	def GetTemperature43_1(self):
 		pass
 	
+	#Should return (Float): (Temperature)
+	@abstractmethod
+	def GetTemperature43_2(self):
+		pass
+
 	#Should return (Float): (Temperature)
 	@abstractmethod
 	def GetTemperature43_3(self):
