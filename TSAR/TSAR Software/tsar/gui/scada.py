@@ -229,7 +229,7 @@ class TemperatureSensor43_1(PassiveWidget):
 	def get_fahrenheit(self):
 		return self.get_celsius() * 1.8 + 32.0
 
-	def get_text(self):
+	def get_formatted_temperature(self):
 		func = None
 		if self.format == TemperatureSensor43_1.CELSIUS:
 			func = self.get_celsius			
@@ -239,6 +239,10 @@ class TemperatureSensor43_1(PassiveWidget):
 			func = self.get_kelvin
 		else:
 			func = lambda: float("NaN")
+
+		return "{:.2f} °{}".format(func(), self.format)
+
+	def get_text(self):
 		return "Name: {}\nTemperature: {:.2f} °{}".format(self.name, func(), self.format)
 
 class TemperatureSensor43_2(PassiveWidget):
@@ -263,7 +267,7 @@ class TemperatureSensor43_2(PassiveWidget):
 	def get_fahrenheit(self):
 		return self.get_celsius() * 1.8 + 32.0
 
-	def get_text(self):
+	def get_formatted_temperature(self):
 		func = None
 		if self.format == TemperatureSensor43_1.CELSIUS:
 			func = self.get_celsius			
@@ -273,16 +277,30 @@ class TemperatureSensor43_2(PassiveWidget):
 			func = self.get_kelvin
 		else:
 			func = lambda: float("NaN")
-		return "Name: {}\nTemperature: {:.2f} °{}".format(self.name, func(), self.format)
 
-class Rocket_Nozzle(PassiveWidget):
-	def __init__(self, *args, **kwargs):
-		PassiveWidget.__init__(self, *args, **kwargs)
-		self.temperature = TemperatureSensor43_2()
-		self.pressure = PressureTranducer4_5()
+		return "{:.2f} °{}".format(func(), self.format)
 
 	def get_text(self):
-		pass
+		return "Name: {}\n{}".format(self.name, self.get_formatted_temperature())
+
+class RocketNozzle(PassiveWidget):
+	def __init__(self, *args, **kwargs):
+		PassiveWidget.__init__(self, *args, **kwargs)
+		self.temperature = TemperatureSensor43_2(*args, **kwargs)
+		self.pressure = PressureTranducer4_5(*args, **kwargs)
+
+	def get_text(self):
+		return "Name: {}\nTemperature: {}\nPressure: {:.3f} kPa".format(
+			self.name, self.temperature.get_formatted_temperature(), self.pressure.get_data())
+
+
+class LOXTank21_1(PassiveWidget):
+	def __init__(self, *args, **kwargs):
+		PassiveWidget.__init__(self, *args, **kwargs)
+		self.temperature = TemperatureSensor43_1(*args, **kwargs)
+
+	def get_text(self):
+		return "Name: {}\nTemperature: {}".format(self.name, self.temperature.get_formatted_temperature())
 
 
 class Pipe:
@@ -353,7 +371,6 @@ if __name__ == "__main__":
 			"4.2":	PressureTranducer4_2(dumdum, "Pressure Tranducer 4.2", QRect(900, 250, 50, 75), "images/transducer.png"),
 			"4.3":	PressureTranducer4_3(dumdum, "Pressure Tranducer 4.3", QRect(150, 225, 50, 75), "images/transducer.png"),
 			"4.4":	PressureTranducer4_4(dumdum, "Pressure Tranducer 4.4", QRect(450, 500, 50, 75), "images/transducer.png"),
-			"4.5":	PressureTranducer4_5(dumdum, "Pressure Tranducer 4.5", QRect(600, 720, 50, 75), "images/transducer.png"),
 			"11.1": PassiveWidget(None, "Pressure Regulator 11.1", QRect(900, 50, 50, 50), "images/regulator.jpg"),
 			"7.1":	PassiveWidget(None, "Pressure Regulator 7.1", QRect(300, 50, 50, 50), "images/regulator.jpg"),
 			"9.1":	Valve9_1(dumdum, "Valve 9.1", QRect(250, 110, 50, 75), "images/valve.jpg"),
@@ -365,10 +382,8 @@ if __name__ == "__main__":
 			"58.1":	Valve58_1(dumdum, "Valve 58.1", QRect(1000, 350, 50, 75), "images/valve.jpg"),
 			"68.1":	Servo68_1(dumdum, "Servo 68.1", QRect(900, 600, 50, 75), "images/valve.jpg"),
 			"69.1":	Servo69_1(dumdum, "Servo 69.1", QRect(50, 600, 50, 75), "images/valve.jpg"),
-			"21.1":	PassiveWidget(None, "Liquid Oxygen Tank 21.1", QRect(25, 300, 120, 98), "images/tank.jpg"),
-			"43.1":	TemperatureSensor43_1(dumdum, "Temperature Sensor 43.1", QRect(200, 340, 37.5, 75), "images/temp.png"),
-			"43.2":	TemperatureSensor43_2(dumdum, "Temperature Sensor 43.2", QRect(600, 635, 37.5, 75), "images/temp.png"),
-			"nozz":	PassiveWidget(None, "Rocket Booster Nozzle", QRect(400, 600, 150, 200), "images/nozzle.gif"),
+			"21.1":	LOXTank21_1(dumdum, "Liquid Oxygen Tank 21.1", QRect(25, 300, 120, 98), "images/tank.jpg"),
+			"nozz":	RocketNozzle(dumdum, "Rocket Booster Nozzle", QRect(400, 600, 150, 200), "images/nozzle.gif"),
 	}
 
 	# Intersections
@@ -389,14 +404,11 @@ if __name__ == "__main__":
 		Pipe(widgets["9.3"], widgets["21.1"], endAnchor=(.84, .5)),
 		Pipe(widgets["42.1"], QPoint(125, 210), (.5, .8)),
 		Pipe(widgets["4.3"], QPoint(130, 262)),
-		Pipe(widgets["43.1"], widgets["21.1"], (.30, .38), (.5, .7)),
 		Pipe(widgets["21.1"], widgets["69.1"], endAnchor=(.7, .5)),
 		Pipe(widgets["49.1"], QPoint(90, 437)),
 		Pipe(widgets["69.1"], widgets["nozz"], (.5, .85), (.5, .31)),
 		Pipe(widgets["4.4"], widgets["nozz"]),
 		Pipe(widgets["49.1"], widgets["4.4"], joints=2, direction=0),
-		Pipe(widgets["nozz"], widgets["4.5"], joints=2, direction=0),
-		Pipe(widgets["nozz"], widgets["43.2"], joints=2, direction=0),
 		Pipe(widgets["28.1"], widgets["68.1"], joints=2, direction=1),
 		Pipe(widgets["68.1"], widgets["nozz"], endAnchor=(.5, .56), joints=2, direction=0),
 		Pipe(widgets["28.1"], widgets["49.2"], endAnchor=(.5, .75), joints=2),
