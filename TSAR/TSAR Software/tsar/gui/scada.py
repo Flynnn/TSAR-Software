@@ -416,10 +416,11 @@ if __name__ == "__main__":
 	]
 
 	# RAINBOW PIPES???
-	import random
-	colors = [Qt.red, QColor("orange"), Qt.yellow, Qt.green, Qt.cyan, QColor("indigo"), QColor("violet")]#, Qt.white]
-	for pipe in pipes:
-		pipe.color = random.choice(colors)
+	if "--colors" in sys.argv:
+		import random
+		colors = [Qt.red, QColor("orange"), Qt.yellow, Qt.green, Qt.cyan, QColor("indigo"), QColor("violet")]#, Qt.white]
+		for pipe in pipes:
+			pipe.color = random.choice(colors)
 
 	# Add pipes to widgets list
 	for pipe in pipes:
