@@ -1,0 +1,47 @@
+2/9
+
+Graph
+ * Green - Active thing, displays information, important
+ * Yellow - thing that exists, no sensors or data
+ * Red/None - Ignore
+ * Orange - TBD
+
+Interface 
+ * Green for oxygen
+ * Red for fuel
+ * Blue for Nitrogen 
+
+
+Done: Black background
+
+Done: Research and implement QT run loop
+
+14.2 is name
+
+Done: Configure locations where pipes connect to widgets
+
+
+3/2/2018
+Question: What format does temperature sensor return data as? Celsius?
+
+
+3/8/2018
+Questions:
+  - Arduino programmer (Done)
+  * Zulip debacle: What are servo values
+    + Three states (Open, Cracked, Closed)
+  * GetTemperature43_2 doesn't exist; created it
+    + Done.
+  * Integrating temperature and pressure into associated tanks? Naming scheme?
+    + Yes. 
+  * No GetServer68/SetServo69
+  * Warning and danger levels
+    + Will happen later
+
+rename servos to angle sensors
+baseball thing is mass flow sensor (70.1)
+Force sensor included with nozzle
+
+
+====================
+
