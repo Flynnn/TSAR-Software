@@ -180,7 +180,11 @@ void stateActualization() {
 		digitalWrite(GREEN1, LOW);
 	}
 
-	digitalWrite(GREEN2, LOW);
+	if (lastHeartbeatReceived == 0) {
+		digitalWrite(AMBER1, HIGH);
+	} else {
+		digitalWrite(AMBER1, LOW);
+	}
 	
 	switch (failureCause) {
 		case FC_NO_FAILURE:

@@ -58,6 +58,8 @@ print("Pumping excess data:", s.read_all().hex())
 print("Pumping excess data:", s.read_all().hex())
 print("Done.")
 
+input("Press enter to begin heartbeat...")
+
 old_hash = 0
 loop_count = 0
 
