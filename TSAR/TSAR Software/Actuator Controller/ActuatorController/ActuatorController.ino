@@ -13,6 +13,8 @@ enum FailureCause {
 	FC_TOO_LONG_SINCE_LAST_HEARTBEAT = 1,
 	FC_TOO_MANY_LIFETIME_CHECKSUM_ERRORS = 2,
 	FC_PANIC_COMMAND = 3,
+
+	FC_DEMO = 12,
 };
 
 enum FailureMode {
@@ -39,16 +41,30 @@ unsigned long lastHeartbeatReceived = 0;
 unsigned long lastHeartbeatSent = 0;
 uint8_t current_packet[RECEIVE_PACKET_LENGTH] = {0};
 
-// Sesnors
+// Sensors
 uint8_t sensor1 = 0;
 uint8_t sensor2 = 0;
 uint8_t sensor3 = 0;
 uint8_t sensor4 = 0;
 uint16_t sensor5 = 0;
 
-// Demo variables
-const byte FAILURE_LED = 10;
-const byte STATUS_LED = LED_BUILTIN;
+// Demo values
+const int DEMO_SENSOR_MIN_THRESH = 63;
+const int DEMO_SENSOR_MAX_THRESH = 191;
+
+// Digital outputs
+const int AMBER1 = 4;
+const int AMBER2 = 5;
+const int GREEN1 = 6;
+const int GREEN2 = 7;
+const int RED1 = 8;
+const int RED2 = 9;
+
+// Analog inputs
+const int KNOB1 = 0;
+const int KNOB2 = 1;
+const int KNOB3 = 2;
+const int KNOB4 = 3;
 
 // Generate a checksum value from a array of bytes
 long generate_checksum(uint8_t message[], int numBytes) {
@@ -86,13 +102,23 @@ void inline long_to_bytes(uint8_t buf[], long data) {
 	buf[3] = (data >> 24) & 255;
 }
 
+// Enter safest next failure mode
+void inline triggerFailure(FailureCause cause) {
+	failureMode = safestNextFailureMode;
+	failureCause = cause;
+}
+
 // One-time serial and pin setup
 void setup() {
 	// Setup serial communication
 	Serial.begin(9600);
-	pinMode(STATUS_LED, OUTPUT);
-	pinMode(FAILURE_LED, OUTPUT);
-//  while (!Serial); // Wait for serial port to connect. Needed for native USB
+	pinMode(AMBER1, OUTPUT);
+	pinMode(AMBER2, OUTPUT);
+	pinMode(GREEN1, OUTPUT);
+	pinMode(GREEN2, OUTPUT);
+	pinMode(RED1, OUTPUT);
+	pinMode(RED2, OUTPUT);
+	while (!Serial); // Wait for serial port to connect. Needed for native USB
 }
 
 // Process received heartbeat
@@ -148,27 +174,40 @@ void processCommand() {
 
 void stateActualization() {
 	// Do useful things
-	if (millis() % (long)pow(2, actuatorValues[0]) > (long)pow(2, actuatorValues[0]) / 2) {
-		digitalWrite(STATUS_LED, HIGH);
+	if (millis() & 1024) {
+		digitalWrite(GREEN1, HIGH);
 	} else {
-		digitalWrite(STATUS_LED, LOW);
+		digitalWrite(GREEN1, LOW);
 	}
 
+	digitalWrite(GREEN2, LOW);
+	
 	switch (failureCause) {
 		case FC_NO_FAILURE:
 		case FC_PANIC_COMMAND:
+			digitalWrite(GREEN2, HIGH);
 			break; // Do nothing for these failure causes
 
 		case FC_TOO_LONG_SINCE_LAST_HEARTBEAT:
 			if (millis() & 128) {
-				digitalWrite(FAILURE_LED, HIGH);
+				digitalWrite(RED1, HIGH);
 			} else {
-				digitalWrite(FAILURE_LED, LOW);
+				digitalWrite(RED1, LOW);
 			}
 			break;
 
 		case FC_TOO_MANY_LIFETIME_CHECKSUM_ERRORS:
-			analogWrite(FAILURE_LED, (millis() & 2047) / 8);
+			analogWrite(RED1, (millis() & 2047) / 8);
+			break;
+
+		case FC_DEMO:
+			if (millis() & 128) {
+				digitalWrite(RED1, HIGH);
+				digitalWrite(RED2, LOW);
+			} else {
+				digitalWrite(RED2, HIGH);
+				digitalWrite(RED1, LOW);
+			}
 			break;
 	}
 
@@ -177,11 +216,11 @@ void stateActualization() {
 
 void sensorAcquisition() {
 	// Get some senses
-	sensor1 = actuatorValues[0]; //random(256);
-	sensor2 = random(256);
-	sensor3 = random(256);
-	sensor4 = random(256);
-	sensor5 = random(65536);
+	sensor1 = analogRead(KNOB1) >> 2;
+	sensor2 = analogRead(KNOB2) >> 2;
+	sensor3 = analogRead(KNOB3) >> 2;
+	sensor4 = analogRead(KNOB4) >> 2;
+	sensor5 = analogRead(KNOB4);
 }
 
 void checkHeartbeatErrors() {	
@@ -198,6 +237,19 @@ void checkHeartbeatErrors() {
 
 void emergencyDetect() {
 	// Check all of the sensor state registers for error triggers. If trigger occurs, enter appropriate failure mode with appropriate failure cause.
+	
+	if (sensor1 < DEMO_SENSOR_MIN_THRESH || sensor1 > DEMO_SENSOR_MAX_THRESH) {
+		triggerFailure(FC_DEMO);
+	}
+	if (sensor2 < DEMO_SENSOR_MIN_THRESH || sensor1 > DEMO_SENSOR_MAX_THRESH) {
+		triggerFailure(FC_DEMO);
+	} 
+	if (sensor3 < DEMO_SENSOR_MIN_THRESH || sensor1 > DEMO_SENSOR_MAX_THRESH) {
+		triggerFailure(FC_DEMO);
+	} 
+	if (sensor4 < DEMO_SENSOR_MIN_THRESH || sensor1 > DEMO_SENSOR_MAX_THRESH) {
+		triggerFailure(FC_DEMO);
+	}
 }
 
 void sendHeartbeat() {
@@ -248,4 +300,3 @@ void loop() {
 		sendHeartbeat();
 	}
  }
-
