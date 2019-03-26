@@ -27,13 +27,22 @@ enum FailureMode {
 enum Command {
 	CMD_DO_NOTHING = 0,
 	CMD_PANIC = 1,
+
+	CMD_RED = 2,
+	CMD_GREEN = 3,
+	CMD_BLUE = 4,
+	CMD_MAGENTA = 5,
+	CMD_YELLOW = 6,
+	CMD_CYAN = 7,
+	CMD_WHITE = 8,
+	CMD_BLACK = 9
 };
 
 // Global variables
 int consecutiveChecksumFailure = 0;
 int lifetimeChecksumFailure = 0;
 FailureMode safestNextFailureMode = FM_OTHER_FAILURE;
-uint8_t command = -1;
+Command command = CMD_DO_NOTHING;
 uint8_t actuatorValues[RECEIVE_PAYLOAD_LENGTH] = {0};
 FailureMode failureMode = FM_NO_FAILURE;
 FailureCause failureCause = FC_NO_FAILURE;
@@ -59,6 +68,9 @@ const int GREEN1 = 6;
 const int GREEN2 = 7;
 const int RED1 = 8;
 const int RED2 = 9;
+const int RGB_RED = 10;
+const int RGB_GREEN = 11;
+const int RGB_BLUE = 12;
 
 // Analog inputs
 const int KNOB1 = 0;
@@ -146,7 +158,7 @@ void processUARTBuffer() {
 				++lifetimeChecksumFailure;
 			} else {
 				safestNextFailureMode = (FailureMode) current_packet[1];
-				command = current_packet[2];
+				command = (Command) current_packet[2];
 				memcpy(actuatorValues, &current_packet[3], RECEIVE_PAYLOAD_LENGTH);
 				
 				consecutiveChecksumFailure = 0;
@@ -160,14 +172,44 @@ void processUARTBuffer() {
 	}
 }
 
+void setColor(bool red, bool green, bool blue) {
+	digitalWrite(RGB_RED, red);
+	digitalWrite(RGB_GREEN, green);
+	digitalWrite(RGB_BLUE, blue);
+}
+
 void processCommand() {
 	switch (command) {
 		case CMD_DO_NOTHING:
 			break; // Do nothing.
 			
 		case CMD_PANIC:
-			failureMode = safestNextFailureMode;
-			failureCause = FC_PANIC_COMMAND;
+			triggerFailure(FC_PANIC_COMMAND);
+			break;
+
+		case CMD_RED:
+			setColor(1, 0, 0);
+			break;
+		case CMD_GREEN:
+			setColor(0, 1, 0);
+			break;
+		case CMD_BLUE:
+			setColor(0, 0, 1);
+			break;
+		case CMD_YELLOW:
+			setColor(1, 1, 0);
+			break;
+		case CMD_MAGENTA:
+			setColor(1, 0, 1);
+			break;
+		case CMD_CYAN:
+			setColor(0, 1, 1);
+			break;
+		case CMD_WHITE:
+			setColor(1, 1, 1);
+			break;
+		case CMD_BLACK:
+			setColor(0, 0, 0);
 			break;
 	}
 }
@@ -188,10 +230,19 @@ void stateActualization() {
 	
 	switch (failureCause) {
 		case FC_NO_FAILURE:
-		case FC_PANIC_COMMAND:
 			digitalWrite(GREEN2, HIGH);
-			break; // Do nothing for these failure causes
+			break; // Do nothing for this failure cause
 
+		case FC_PANIC_COMMAND:
+			if (millis() & 128) {
+				digitalWrite(RED1, HIGH);
+				digitalWrite(RED2, HIGH);
+			} else {
+				digitalWrite(RED1, LOW);
+				digitalWrite(RED2, LOW);
+			}
+			break;
+		
 		case FC_TOO_LONG_SINCE_LAST_HEARTBEAT:
 			if (millis() & 128) {
 				digitalWrite(RED1, HIGH);
@@ -229,8 +280,7 @@ void sensorAcquisition() {
 
 void checkHeartbeatErrors() {	
 	if (lastHeartbeatReceived > 0 && millis() - lastHeartbeatReceived > 500) {
-		failureCause = FC_TOO_LONG_SINCE_LAST_HEARTBEAT;
-		failureMode = safestNextFailureMode;
+		triggerFailure(FC_TOO_LONG_SINCE_LAST_HEARTBEAT);
 	}
 
 	if (lifetimeChecksumFailure > MAXIMUM_LIFETIME_CHECKSUM_ERRORS) {
