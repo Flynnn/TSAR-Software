@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <Servo.h>
 
 // Constants
 const int RECEIVE_PAYLOAD_LENGTH = 5; // The length in bytes of the actuator commands
@@ -35,7 +36,10 @@ enum Command {
 	CMD_YELLOW = 6,
 	CMD_CYAN = 7,
 	CMD_WHITE = 8,
-	CMD_BLACK = 9
+	CMD_BLACK = 9,
+
+	CMD_SERVO_ROTATE = 10,
+	CMD_BUZZ = 11
 };
 
 // Global variables
@@ -49,6 +53,7 @@ FailureCause failureCause = FC_NO_FAILURE;
 unsigned long lastHeartbeatReceived = 0;
 unsigned long lastHeartbeatSent = 0;
 uint8_t current_packet[RECEIVE_PACKET_LENGTH] = {0};
+int servo_pos = 0;
 
 // Sensors
 uint8_t sensor1 = 0;
@@ -62,6 +67,7 @@ const int DEMO_SENSOR_MIN_THRESH = 63;
 const int DEMO_SENSOR_MAX_THRESH = 191;
 
 // Digital outputs
+const int BUZZER = 2;
 const int AMBER1 = 4;
 const int AMBER2 = 5;
 const int GREEN1 = 6;
@@ -71,6 +77,7 @@ const int RED2 = 9;
 const int RGB_RED = 10;
 const int RGB_GREEN = 11;
 const int RGB_BLUE = 12;
+Servo servo;
 
 // Analog inputs
 const int KNOB1 = 0;
@@ -130,6 +137,8 @@ void setup() {
 	pinMode(GREEN2, OUTPUT);
 	pinMode(RED1, OUTPUT);
 	pinMode(RED2, OUTPUT);
+	servo.attach(3);
+	servo.write(0); // Reset servo to initial position
 	while (!Serial); // Wait for serial port to connect. Needed for native USB
 }
 
@@ -211,7 +220,17 @@ void processCommand() {
 		case CMD_BLACK:
 			setColor(0, 0, 0);
 			break;
+
+		case CMD_SERVO_ROTATE:
+			servo_pos = (servo_pos + 90) % 270;
+			servo.write(servo_pos);
+			break;
+
+		case CMD_BUZZ:
+			tone(BUZZER, 1000, 250);
 	}
+
+	command = CMD_DO_NOTHING;
 }
 
 void stateActualization() {
